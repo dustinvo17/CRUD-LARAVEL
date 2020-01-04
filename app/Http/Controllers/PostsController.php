@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Session;
 
 class PostsController extends Controller
 {
@@ -24,11 +26,18 @@ class PostsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
-        //
+    public function create() {
+            if(Auth::check()) {
         return view('posts.create');
+    }   
+    else {
+        Session::flash('message','You have to log in');
+        //
+        return redirect('/');
+     
     }
+    }
+
 
     /**
      * Store a newly created resource in storage.
@@ -49,9 +58,22 @@ class PostsController extends Controller
            $post->title = $request->title;
            $post->body = $request->body;
            $post->author = $request->author;
-           $post->save();
-             return redirect('/post');
+          
+            if($request->img) {
+            $file = $request->file('img')->getClientOriginalName();
+
+            $filename = pathinfo($file, PATHINFO_FILENAME);
+            $extension = pathinfo($file, PATHINFO_EXTENSION);
+            $fullPath = $filename. now()->timestamp. '.'.$extension;
+            $request->file('img')->storeAs('images',$fullPath);
+            
+            }
+            $post->img = $fullPath;
+            $post->save();
+          return redirect('/post');
+           
         }
+       
     }
 
     /**

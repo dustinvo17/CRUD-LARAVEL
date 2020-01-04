@@ -1,4 +1,4 @@
- @extends('layout.app')
+ @extends('layouts.app')
 
 
  @section('content')
@@ -15,7 +15,7 @@
     </div>
       <div class="form-group">
          <label for="body">Body</label>
-      <textarea  class="form-control"name="body" id="body" cols="30" rows="10">{{$post->body}}</textarea>
+      <textarea  id="article-ckeditor"   class="form-control"name="body" id="body" cols="30" rows="10">{{$post->body}}</textarea>
     </div>
     <input type="submit" class="btn btn-primary" value="Submit">
    
