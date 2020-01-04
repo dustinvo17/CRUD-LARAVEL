@@ -106,7 +106,11 @@ class PostsController extends Controller
     public function edit($id)
     {
         //
+
           $post = Post::find($id);
+            if($post->user_id !== Auth::id()) {
+            return redirect('/');
+        }
         return view('posts.edit',['post' => $post]);
     }
 
@@ -119,14 +123,15 @@ class PostsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        
+        $post = Post::find($id);
+      
        $validation = $this->validate($request,[
             'title' => 'required',
            'author' => 'required',
            'body' => 'required'
         ]);
         if($validation) {
-            $post = Post::find($id);
+            
             $post->title = $request->title;
             $post->body = $request->body;
             $post->author = $request->author;
@@ -161,6 +166,9 @@ class PostsController extends Controller
     {
         //
         $post = Post::find($id);
+         if($post->user_id !== Auth::id()) {
+            return redirect('/');
+        }
         if($post){
             if($post->img !== 'no-image.png'){
                Storage::disk('public')->delete("/images/".$post->img);
