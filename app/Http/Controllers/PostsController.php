@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Session;
 
 class PostsController extends Controller
@@ -14,10 +15,14 @@ class PostsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function __construct()
+    {
+    $this->middleware('auth',['except' =>['show']]);
+    }
     public function index()
     {
         //
-        $posts = Post::all()->reverse();
+        $posts = Post::where('user_id',Auth::id())->get()->reverse();
         return view('posts.index',['posts' => $posts]);
     }
 
@@ -58,7 +63,7 @@ class PostsController extends Controller
            $post->title = $request->title;
            $post->body = $request->body;
            $post->author = $request->author;
-          
+           $post->user_id = Auth::id();
             if($request->img) {
             $file = $request->file('img')->getClientOriginalName();
 
@@ -66,9 +71,12 @@ class PostsController extends Controller
             $extension = pathinfo($file, PATHINFO_EXTENSION);
             $fullPath = $filename. now()->timestamp. '.'.$extension;
             $request->file('img')->storeAs('images',$fullPath);
-            
-            }
             $post->img = $fullPath;
+            }
+            else {
+                $post->img = 'no-image.png';
+            }
+            
             $post->save();
           return redirect('/post');
            
@@ -122,9 +130,23 @@ class PostsController extends Controller
             $post->title = $request->title;
             $post->body = $request->body;
             $post->author = $request->author;
-            $post->save();
-            return redirect('/post');
+     
         }
+        if($request->img){
+                $file = $request->file('img')->getClientOriginalName();
+                $filename = pathinfo($file, PATHINFO_FILENAME);
+                $extension = pathinfo($file, PATHINFO_EXTENSION);
+                $fullPath = $filename. now()->timestamp. '.'.$extension;
+                $request->file('img')->storeAs('images',$fullPath);
+                    if($post->img !== 'no-image.png'){
+                        $currentImg = '/storage/images/{{$post->img}}';
+                        Storage::disk('public')->delete("/images/".$post->img);
+                    }
+                 $post->img = $fullPath;
+        }
+             
+        $post->save();
+        return redirect('/post');
      
     
     }
@@ -138,7 +160,11 @@ class PostsController extends Controller
     public function destroy($id)
     {
         //
-        if(Post::find($id)){
+        $post = Post::find($id);
+        if($post){
+            if($post->img !== 'no-image.png'){
+               Storage::disk('public')->delete("/images/".$post->img);
+            }
             Post::destroy($id);
             return redirect('/post');
         }

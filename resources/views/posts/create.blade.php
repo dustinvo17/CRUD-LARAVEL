@@ -14,7 +14,7 @@
     </div>
       <div class="form-group">
          <label for="body">Body</label>
-      <textarea id="article-ckeditor"  class="form-control"name="body" id="body" cols="30" rows="10"></textarea>
+      <textarea id="editor"  class="form-control"name="body"cols="30" rows="10"></textarea>
     </div>
        <input type="file" name="img" style="margin:2rem 0;" />
        <br >

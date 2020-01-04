@@ -28,12 +28,12 @@
             @yield('content')
         </main>
     </div>
-    <script src="//cdn.ckeditor.com/4.13.1/standard/ckeditor.js"></script>
-    <script>
-        setTimeout(function() {
-               CKEDITOR.replace('article-ckeditor');
-        },100)
-     
-    </script>
+<script src="//cdn.ckeditor.com/4.4.7/standard/ckeditor.js"></script>
+<script>
+    setTimeout(function(){
+           CKEDITOR.replace('editor')  
+    },300)
+                                           
+</script>
 </body>
 </html>
